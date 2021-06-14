@@ -1,13 +1,14 @@
-import config from 'config';
 import Sequelize from 'sequelize';
-import { dbConfig } from '@interfaces/db.interface';
 import UserModel from '@models/users.model';
 import { logger } from '@utils/logger';
 
-const { host, user, password, database, pool }: dbConfig = config.get('dbConfig');
+const database = process.env.DB_NAME;
+const user = process.env.DB_USER;
+const password = process.env.DB_PASSWORD;
+
 const sequelize = new Sequelize.Sequelize(database, user, password, {
-  host: host,
-  dialect: 'mysql',
+  host: process.env.DB_HOST,
+  dialect: 'postgres',
   timezone: '+09:00',
   define: {
     charset: 'utf8mb4',
@@ -16,8 +17,8 @@ const sequelize = new Sequelize.Sequelize(database, user, password, {
     freezeTableName: true,
   },
   pool: {
-    min: pool.min,
-    max: pool.max,
+    min: 0,
+    max: 5,
   },
   logQueryParameters: process.env.NODE_ENV === 'development',
   logging: (query, time) => {

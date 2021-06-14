@@ -1,0 +1,18 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "password",
+    "database": "brodin",
+    "host": "0.0.0.0",
+    "port": "5432",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "password",
+    "database": "brodin-test",
+    "host": "0.0.0.0",
+    "port": "5432",
+    "dialect": "postgres"
+  }
+}

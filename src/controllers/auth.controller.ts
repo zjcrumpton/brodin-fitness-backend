@@ -34,7 +34,6 @@ class AuthController {
   };
 
   public authenticate = async (req: RequestWithUser, res: Response, next: NextFunction) => {
-    console.log('made it to the controller');
     try {
       const user: User = req.user;
       const view = this.authViews.succes(user);

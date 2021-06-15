@@ -38,10 +38,10 @@ class AuthService {
     if (isEmpty(userData)) throw new HttpException(400, 'please provide an email and password to login');
 
     const findUser: User = await this.users.findOne({ where: { email: userData.email } });
-    if (!findUser) throw new HttpException(409, `can't find a user with the provided email address: ${userData.email}`);
+    if (!findUser) throw new HttpException(401, `can't find a user with the provided email address: ${userData.email}`);
 
     const isPasswordMatching: boolean = await bcrypt.compare(userData.password, findUser.passwordDigest);
-    if (!isPasswordMatching) throw new HttpException(409, 'wrong password');
+    if (!isPasswordMatching) throw new HttpException(401, 'wrong password');
 
     const tokenData = this.createToken(findUser);
 

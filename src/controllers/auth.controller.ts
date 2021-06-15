@@ -1,18 +1,21 @@
 import { NextFunction, Request, Response } from 'express';
-import { CreateUserDto } from '@dtos/users.dto';
+import { CreateUserDto, LoginUserDto } from '@dtos/users.dto';
 import { User } from '@interfaces/users.interface';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import AuthService from '@services/auth.service';
+import AuthViews from '@/views/auth.views';
 
 class AuthController {
   public authService = new AuthService();
+  public authViews = new AuthViews();
 
   public signUp = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userData: CreateUserDto = req.body;
-      const signUpUserData: User = await this.authService.signup(userData);
+      const { token, user } = await this.authService.signup(userData);
+      const view = this.authViews.auth(token, user);
 
-      res.status(201).json({ data: signUpUserData, message: 'signup' });
+      res.status(201).json(view);
     } catch (error) {
       next(error);
     }
@@ -20,23 +23,21 @@ class AuthController {
 
   public logIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userData: CreateUserDto = req.body;
-      const { cookie, findUser } = await this.authService.login(userData);
+      const userData: LoginUserDto = req.body;
+      const { token, user } = await this.authService.login(userData);
+      const view = this.authViews.auth(token, user);
 
-      res.setHeader('Set-Cookie', [cookie]);
-      res.status(200).json({ data: findUser, message: 'login' });
+      res.status(200).json(view);
     } catch (error) {
       next(error);
     }
   };
 
-  public logOut = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+  public authenticate = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-      const userData: User = req.user;
-      const logOutUserData: User = await this.authService.logout(userData);
-
-      res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
-      res.status(200).json({ data: logOutUserData, message: 'logout' });
+      const user: User = req.user;
+      const view = this.authViews.succes(user);
+      res.status(200).json(view);
     } catch (error) {
       next(error);
     }

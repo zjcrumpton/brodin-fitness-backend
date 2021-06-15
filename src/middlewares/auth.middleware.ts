@@ -7,7 +7,7 @@ import { DataStoredInToken, RequestWithUser } from '@interfaces/auth.interface';
 
 const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFunction) => {
   try {
-    const Authorization = req.cookies['Authorization'] || req.header('Authorization').split('Bearer ')[1] || null;
+    const Authorization = req.header('Authorization').split('Bearer ')[1];
 
     if (Authorization) {
       const secretKey: string = config.get('secretKey');
@@ -19,13 +19,14 @@ const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFun
         req.user = findUser;
         next();
       } else {
-        next(new HttpException(401, 'Wrong authentication token'));
+        next(new HttpException(401, 'Bad authentication token'));
       }
     } else {
       next(new HttpException(404, 'Authentication token missing'));
     }
   } catch (error) {
-    next(new HttpException(401, 'Wrong authentication token'));
+    console.log(error);
+    next(new HttpException(401, 'Please provide a valid authentication token'));
   }
 };
 
